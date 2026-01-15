@@ -1,0 +1,1 @@
+// Este arquivo não é mais utilizado. O monitor de produção foi integrado ao AdminDashboard.
