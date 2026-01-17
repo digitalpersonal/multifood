@@ -7,7 +7,7 @@ export enum Category {
   COMBOS = 'Combos',
   PIZZAS = 'Pizzas',
   MARMITAS = 'Marmitas',
-  ACAI = 'Açaí' // Nova categoria para açaí
+  ACAI = 'Açaí'
 }
 
 export enum ItemStatus {
@@ -26,6 +26,7 @@ export enum TabStatus {
 
 export enum PaymentStatus {
   PENDING = 'Pendente',
+  AWAITING_PAYMENT = 'Aguardando Pagamento',
   PAID = 'Pago',
   FAILED = 'Falhou'
 }
@@ -43,6 +44,42 @@ export enum OrderType {
   INDOOR = 'Salão',
   DELIVERY = 'Entrega',
   TAKEAWAY = 'Retirada'
+}
+
+export enum TransactionType {
+  INCOME = 'Receita',
+  EXPENSE = 'Despesa'
+}
+
+export interface Transaction {
+  id: string;
+  companyId: string;
+  type: TransactionType;
+  category: string;
+  amount: number;
+  description: string;
+  timestamp: string;
+}
+
+export interface InventoryItem {
+  id: string;
+  companyId: string;
+  name: string;
+  quantity: number;
+  unit: string; // kg, un, l, etc
+  minQuantity: number;
+}
+
+export interface Closure {
+  id: string;
+  companyId: string;
+  startDate: string;
+  endDate: string;
+  type: 'shift' | 'daily' | 'weekly' | 'monthly';
+  label: string;
+  totalSales: number;
+  totalExpenses: number;
+  netAmount: number;
 }
 
 export interface ModifierOption {
@@ -91,64 +128,11 @@ export interface OrderItem {
   marmitaSize?: string;
 }
 
-export interface OperatingShift {
+export interface PaymentLog {
   id: string;
-  label: string;
-  startTime: string; 
-  endTime: string;   
-  enabled: boolean;
-}
-
-export interface MarmitaSize {
-  id: string;
-  label: string; 
-  price: number;
-}
-
-export interface MarmitaConfig {
-  enabled: boolean;
-  dailyMenu: string; 
-  ingredients: string[]; // Lista de itens legíveis
-  image?: string;
-  startTime: string;
-  endTime: string;
-  sizes: MarmitaSize[];
-  modifierGroups?: ModifierGroup[]; // Opcionais como ovo extra, etc.
-}
-
-export interface Combo {
-  id: string;
-  companyId: string;
-  name: string;
-  description: string;
-  price: number;
-  productIds: string[];
-  image?: string;
-}
-
-export interface Promotion {
-  id: string;
-  companyId: string;
-  title: string;
-  description: string;
-  badge: string;
-  color: string;
-  targetId?: string;
-}
-
-export interface Company {
-  id: string;
-  name: string;
-  logo?: string;
-  slug: string;
-  deliveryFee: number;
-}
-
-export interface DeliveryInfo {
-  address: string;
-  phone: string;
-  complement?: string;
-  postalCode?: string;
+  amount: number;
+  method: PaymentMethod;
+  timestamp: string;
 }
 
 export interface Tab {
@@ -168,8 +152,103 @@ export interface Tab {
   serviceFee: number;
   total: number;
   amountPaid: number; 
+  paymentLogs: PaymentLog[];
   paymentMethod?: PaymentMethod;
   peopleCount?: number;
+  observation?: string;
+  wantsCondiments?: boolean;
+  wantsCutlery?: boolean;
+}
+
+export interface Settings {
+  companyId: string;
+  isOpen: boolean;
+  openingTime: string;
+  closingTime: string;
+  logo?: string;
+  operatingShifts: OperatingShift[];
+  marmitaConfig: MarmitaConfig;
+  serviceFeePercent: number;
+  serviceFeeEnabled: boolean;
+  deliveryFee: number;
+  autoPrintReceipt: boolean;
+  printKitchenVia: boolean;
+  companyName: string;
+  cnpj: string;
+  whatsapp?: string;
+  address?: string;
+  enabledPaymentMethods: PaymentMethod[];
+  enabledOrderTypes: OrderType[];
+}
+
+export interface DeliveryInfo {
+  address: string;
+  phone: string;
+  complement?: string;
+  postalCode?: string;
+}
+
+export interface OperatingShift {
+  id: string;
+  label: string;
+  startTime: string; 
+  endTime: string;   
+  enabled: boolean;
+}
+
+export interface MarmitaSize {
+  id: string;
+  label: string; 
+  price: number;
+}
+
+export interface MarmitaConfig {
+  enabled: boolean;
+  dailyMenu: string; 
+  ingredients: string[];
+  image?: string;
+  startTime: string;
+  endTime: string;
+  sizes: MarmitaSize[];
+  modifierGroups?: ModifierGroup[];
+}
+
+export interface Combo {
+  id: string;
+  companyId: string;
+  name: string;
+  description: string;
+  price: number;
+  productIds: string[];
+  image?: string;
+}
+
+export type PromotionSchedule = 'always' | 'daily' | 'monthly' | 'yearly';
+export type PromotionType = 'percentage' | 'fixed' | 'badge_only';
+
+export interface Promotion {
+  id: string;
+  companyId: string;
+  title: string;
+  description: string;
+  badge: string;
+  color: string;
+  targetType: 'product' | 'category';
+  targetId: string; // ID do produto ou nome da categoria
+  scheduleType: PromotionSchedule;
+  scheduleValue?: string; // Dia da semana (0-6), Dia do mês (1-31), ou Data (MM-DD)
+  promoType: PromotionType;
+  discountValue: number;
+  isActive: boolean;
+}
+
+export interface Company {
+  id: string;
+  name: string;
+  logo?: string;
+  slug: string;
+  deliveryFee: number;
+  createdAt: string;
 }
 
 export interface Notification {
@@ -183,21 +262,4 @@ export interface Notification {
   orderType: OrderType;
   timestamp: string;
   read: boolean;
-}
-
-export interface Settings {
-  companyId: string;
-  isOpen: boolean;
-  logo?: string;
-  operatingShifts: OperatingShift[];
-  marmitaConfig: MarmitaConfig;
-  serviceFeePercent: number;
-  serviceFeeEnabled: boolean;
-  deliveryFee: number;
-  autoPrintReceipt: boolean;
-  printKitchenVia: boolean;
-  companyName: string;
-  cnpj: string;
-  enabledPaymentMethods: PaymentMethod[];
-  enabledOrderTypes: OrderType[];
 }

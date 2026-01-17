@@ -16,6 +16,41 @@ export const MOCK_PRODUCTS: Product[] = [
     ]
   },
   { 
+    id: 'sj1', companyId: '1', name: 'Suco de Laranja Natural', price: 10.00, category: Category.BEBIDAS,
+    description: 'Suco extraído da fruta na hora.',
+    modifierGroups: [
+      {
+        id: 'sc1', name: 'Opção de Adoçamento', min: 1, max: 1,
+        options: [
+          { id: 'opt3', name: 'Com Açúcar', extraPrice: 0 },
+          { id: 'opt4', name: 'Com Adoçante', extraPrice: 0 },
+          { id: 'opt5', name: 'Natural (Sem nada)', extraPrice: 0 }
+        ]
+      }
+    ]
+  },
+  { 
+    id: 'sj2', companyId: '1', name: 'Suco de Morango', price: 14.00, category: Category.BEBIDAS,
+    description: 'Morango fresco selecionado.',
+    modifierGroups: [
+      {
+        id: 'sc1_morango', name: 'Base do Suco', min: 1, max: 1,
+        options: [
+          { id: 'opt1', name: 'Com Água', extraPrice: 0 },
+          { id: 'opt2', name: 'Com Leite', extraPrice: 3.50 }
+        ]
+      },
+      {
+        id: 'sc2_morango', name: 'Opção de Adoçamento', min: 1, max: 1,
+        options: [
+          { id: 'opt3', name: 'Com Açúcar', extraPrice: 0 },
+          { id: 'opt4', name: 'Com Adoçante', extraPrice: 0 },
+          { id: 'opt5', name: 'Natural (Sem nada)', extraPrice: 0 }
+        ]
+      }
+    ]
+  },
+  { 
     id: '3', companyId: '1', name: 'Caipirinha Limão', price: 22.00, category: Category.BEBIDAS,
     modifierGroups: [
       {
@@ -77,7 +112,7 @@ export const MOCK_PRODUCTS: Product[] = [
     ]
   },
 
-  // PIZZAS (Lógica Meio-a-Meio)
+  // PIZZAS
   {
     id: 'piz1', companyId: '1', name: 'Pizza Gigante (12 fatias)', price: 65.00, category: Category.PIZZAS,
     description: 'Escolha até 2 sabores para sua pizza meio-a-meio.',
@@ -102,142 +137,24 @@ export const MOCK_PRODUCTS: Product[] = [
     ]
   },
 
-  // AÇAÍ - Nova Categoria
+  // AÇAÍ
   {
     id: 'acai_p', companyId: '2', name: 'Açaí Pequeno (300ml)', price: 15.00, category: Category.ACAI,
     description: 'Comece com nosso açaí puro e adicione seus complementos favoritos!',
-    image: 'https://images.unsplash.com/photo-1577907577884-a1591f24d2d4?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     modifierGroups: [
       {
         id: 'acai_frutas', name: 'Escolha suas Frutas', min: 0, max: 3,
         options: [
           { id: 'fruta_banana', name: 'Banana Fatiada', extraPrice: 2.00 },
           { id: 'fruta_morango', name: 'Morango Fresco', extraPrice: 3.00 },
-          { id: 'fruta_kiwi', name: 'Kiwi Picado', extraPrice: 3.50 },
-          { id: 'fruta_abacaxi', name: 'Abacaxi em Cubos', extraPrice: 2.50 },
-          { id: 'fruta_manga', name: 'Manga Fresca', extraPrice: 3.00 }
+          { id: 'fruta_kiwi', name: 'Kiwi Picado', extraPrice: 3.50 }
         ]
       },
       {
         id: 'acai_cremes', name: 'Cremes e Caldas', min: 0, max: 2,
         options: [
           { id: 'creme_leite_ninho', name: 'Creme de Leite Ninho', extraPrice: 4.00 },
-          { id: 'creme_paçoca', name: 'Creme de Paçoca', extraPrice: 4.00 },
-          { id: 'calda_chocolate', name: 'Calda de Chocolate', extraPrice: 2.00 },
-          { id: 'calda_morango', name: 'Calda de Morango', extraPrice: 2.00 }
-        ]
-      },
-      {
-        id: 'acai_graos', name: 'Grãos e Granolas', min: 0, max: 3,
-        options: [
-          { id: 'grao_granola_trad', name: 'Granola Tradicional', extraPrice: 2.00 },
-          { id: 'grao_granola_zero', name: 'Granola Zero Açúcar', extraPrice: 2.50 },
-          { id: 'grao_amendoim', name: 'Amendoim Granulado', extraPrice: 2.00 },
-          { id: 'grao_linhaça', name: 'Semente de Linhaça', extraPrice: 1.50 }
-        ]
-      },
-      {
-        id: 'acai_doces', name: 'Doces e Extras', min: 0, max: 3,
-        options: [
-          { id: 'doce_leite_cond', name: 'Leite Condensado', extraPrice: 3.00 },
-          { id: 'doce_power_ball', name: 'Power Ball', extraPrice: 3.50 },
-          { id: 'doce_gotas_choc', name: 'Gotas de Chocolate', extraPrice: 3.00 },
-          { id: 'doce_confete', name: 'Confetes Coloridos', extraPrice: 2.50 }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'acai_m', companyId: '2', name: 'Açaí Médio (500ml)', price: 20.00, category: Category.ACAI,
-    description: 'Mais açaí para mais momentos deliciosos. Personalize do seu jeito!',
-    image: 'https://images.unsplash.com/photo-1577907577884-a1591f24d2d4?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    modifierGroups: [
-      {
-        id: 'acai_frutas', name: 'Escolha suas Frutas', min: 0, max: 3,
-        options: [
-          { id: 'fruta_banana', name: 'Banana Fatiada', extraPrice: 2.00 },
-          { id: 'fruta_morango', name: 'Morango Fresco', extraPrice: 3.00 },
-          { id: 'fruta_kiwi', name: 'Kiwi Picado', extraPrice: 3.50 },
-          { id: 'fruta_abacaxi', name: 'Abacaxi em Cubos', extraPrice: 2.50 },
-          { id: 'fruta_manga', name: 'Manga Fresca', extraPrice: 3.00 }
-        ]
-      },
-      {
-        id: 'acai_cremes', name: 'Cremes e Caldas', min: 0, max: 2,
-        options: [
-          { id: 'creme_leite_ninho', name: 'Creme de Leite Ninho', extraPrice: 4.00 },
-          { id: 'creme_paçoca', name: 'Creme de Paçoca', extraPrice: 4.00 },
-          { id: 'calda_chocolate', name: 'Calda de Chocolate', extraPrice: 2.00 },
-          { id: 'calda_morango', name: 'Calda de Morango', extraPrice: 2.00 }
-        ]
-      },
-      {
-        id: 'acai_graos', name: 'Grãos e Granolas', min: 0, max: 3,
-        options: [
-          { id: 'grao_granola_trad', name: 'Granola Tradicional', extraPrice: 2.00 },
-          { id: 'grao_granola_zero', name: 'Granola Zero Açúcar', extraPrice: 2.50 },
-          { id: 'grao_amendoim', name: 'Amendoim Granulado', extraPrice: 2.00 },
-          { id: 'grao_linhaça', name: 'Semente de Linhaça', extraPrice: 1.50 }
-        ]
-      },
-      {
-        id: 'acai_doces', name: 'Doces e Extras', min: 0, max: 3,
-        options: [
-          { id: 'doce_leite_cond', name: 'Leite Condensado', extraPrice: 3.00 },
-          { id: 'doce_power_ball', name: 'Power Ball', extraPrice: 3.50 },
-          { id: 'doce_gotas_choc', name: 'Gotas de Chocolate', extraPrice: 3.00 },
-          { id: 'doce_confete', name: 'Confetes Coloridos', extraPrice: 2.50 }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'acai_g', companyId: '2', name: 'Açaí Grande (700ml)', price: 25.00, category: Category.ACAI,
-    description: 'Para quem ama açaí de verdade! Compartilhe ou saboreie sozinho.',
-    image: 'https://images.unsplash.com/photo-1577907577884-a1591f24d2d4?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    modifierGroups: [
-      {
-        id: 'acai_frutas', name: 'Escolha suas Frutas', min: 0, max: 4, // Mais opções para tamanhos maiores
-        options: [
-          { id: 'fruta_banana', name: 'Banana Fatiada', extraPrice: 2.00 },
-          { id: 'fruta_morango', name: 'Morango Fresco', extraPrice: 3.00 },
-          { id: 'fruta_kiwi', name: 'Kiwi Picado', extraPrice: 3.50 },
-          { id: 'fruta_abacaxi', name: 'Abacaxi em Cubos', extraPrice: 2.50 },
-          { id: 'fruta_manga', name: 'Manga Fresca', extraPrice: 3.00 },
-          { id: 'fruta_uva', name: 'Uva Sem Semente', extraPrice: 3.00 }
-        ]
-      },
-      {
-        id: 'acai_cremes', name: 'Cremes e Caldas', min: 0, max: 3,
-        options: [
-          { id: 'creme_leite_ninho', name: 'Creme de Leite Ninho', extraPrice: 4.00 },
-          { id: 'creme_paçoca', name: 'Creme de Paçoca', extraPrice: 4.00 },
-          { id: 'creme_ovomaltine', name: 'Creme de Ovomaltine', extraPrice: 4.50 },
-          { id: 'calda_chocolate', name: 'Calda de Chocolate', extraPrice: 2.00 },
-          { id: 'calda_morango', name: 'Calda de Morango', extraPrice: 2.00 },
-          { id: 'calda_caramelo', name: 'Calda de Caramelo', extraPrice: 2.00 }
-        ]
-      },
-      {
-        id: 'acai_graos', name: 'Grãos e Granolas', min: 0, max: 4,
-        options: [
-          { id: 'grao_granola_trad', name: 'Granola Tradicional', extraPrice: 2.00 },
-          { id: 'grao_granola_zero', name: 'Granola Zero Açúcar', extraPrice: 2.50 },
-          { id: 'grao_amendoim', name: 'Amendoim Granulado', extraPrice: 2.00 },
-          { id: 'grao_castanha', name: 'Castanha Triturada', extraPrice: 3.00 },
-          { id: 'grao_coco_ralado', name: 'Coco Ralado', extraPrice: 2.00 },
-          { id: 'grao_linhaça', name: 'Semente de Linhaça', extraPrice: 1.50 }
-        ]
-      },
-      {
-        id: 'acai_doces', name: 'Doces e Extras', min: 0, max: 4,
-        options: [
-          { id: 'doce_leite_cond', name: 'Leite Condensado', extraPrice: 3.00 },
-          { id: 'doce_power_ball', name: 'Power Ball', extraPrice: 3.50 },
-          { id: 'doce_gotas_choc', name: 'Gotas de Chocolate', extraPrice: 3.00 },
-          { id: 'doce_confete', name: 'Confetes Coloridos', extraPrice: 2.50 },
-          { id: 'doce_jujuba', name: 'Jujubas', extraPrice: 2.50 },
-          { id: 'doce_kitkat', name: 'Kit Kat Picado', extraPrice: 5.00 }
+          { id: 'creme_paçoca', name: 'Creme de Paçoca', extraPrice: 4.00 }
         ]
       }
     ]

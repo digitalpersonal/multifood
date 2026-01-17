@@ -10,7 +10,7 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         
-        /* Estilos para Impressão Térmica (80mm) */
+        /* Estilos para Impressão Térmica Otimizada */
         @media print {
             body * {
                 visibility: hidden;
@@ -20,16 +20,20 @@
             #printable-receipt, #printable-receipt * {
                 visibility: visible;
                 display: block !important;
+                word-break: break-word; /* Evita que texto longo quebre a largura */
             }
             #printable-receipt {
                 position: absolute;
                 left: 0;
                 top: 0;
-                width: 72mm; /* Ajuste para margens da maioria das térmicas 80mm */
+                /* Reduzido de 72mm para 65mm para garantir 10% de folga nas bordas físicas */
+                width: 65mm; 
                 margin: 0;
-                padding: 2mm;
+                padding: 1mm;
                 color: black !important;
                 background: white !important;
+                font-size: 10px;
+                line-height: 1.2;
             }
             .no-print {
                 display: none !important;
@@ -37,6 +41,11 @@
             @page {
                 margin: 0;
                 size: auto;
+            }
+            /* Garante que tabelas não vazem */
+            table {
+                width: 100% !important;
+                table-layout: fixed;
             }
         }
         
