@@ -18,25 +18,8 @@ import {
 const App: React.FC = () => {
   const [companies, setCompanies] = useState<Company[]>(() => {
     const saved = localStorage.getItem('mf_companies_v5');
-    const defaultCompanies = [
-      { 
-        id: '1', 
-        name: 'Multi Gastronomia', 
-        logo: 'https://images.unsplash.com/photo-1581349485608-9469926a8e5e?q=80&w=500&auto=format&fit=crop',
-        slug: 'multi-gastronomia', 
-        deliveryFee: 7.00, 
-        createdAt: new Date().toISOString() 
-      },
-      { 
-        id: '2', 
-        name: 'Açaí Mania', 
-        logo: 'https://images.unsplash.com/photo-1590301157890-4810ed352733?q=80&w=500&auto=format&fit=crop',
-        slug: 'acai-mania', 
-        deliveryFee: 5.00, 
-        createdAt: new Date().toISOString() 
-      }
-    ];
-    return saved ? JSON.parse(saved) : defaultCompanies;
+    // Em produção, iniciamos com lista vazia para buscar do banco
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [activeCompany, setActiveCompany] = useState<Company | null>(() => {
@@ -62,7 +45,7 @@ const App: React.FC = () => {
 
   const [products, setProducts] = useState<Product[]>(() => {
     const saved = localStorage.getItem('mf_products_v5');
-    return saved ? JSON.parse(saved) : MOCK_PRODUCTS;
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [combos, setCombos] = useState<Combo[]>(() => {
@@ -85,11 +68,11 @@ const App: React.FC = () => {
       operatingShifts: [],
       marmitaConfig: {
         enabled: true,
-        dailyMenu: 'O tempero caseiro que você já conhece.',
-        ingredients: ['Arroz', 'Feijão', 'Proteína', 'Acompanhamento', 'Salada'],
+        dailyMenu: '',
+        ingredients: [],
         startTime: '10:30',
         endTime: '15:30',
-        sizes: [{ id: 'm1', label: 'Média', price: 18.00 }, { id: 'm2', label: 'Grande', price: 24.00 }],
+        sizes: [],
         modifierGroups: []
       },
       serviceFeePercent: 10,
@@ -97,10 +80,10 @@ const App: React.FC = () => {
       deliveryFee: activeCompany?.deliveryFee || 0.00,
       autoPrintReceipt: true,
       printKitchenVia: true,
-      companyName: activeCompany?.name || 'MultiFood',
-      cnpj: '00.000.000/0001-00',
-      whatsapp: '85900000000',
-      address: 'Rua Principal, 123',
+      companyName: activeCompany?.name || 'Nova Empresa',
+      cnpj: '',
+      whatsapp: '',
+      address: '',
       enabledPaymentMethods: [PaymentMethod.CASH, PaymentMethod.PIX, PaymentMethod.CARD],
       enabledOrderTypes: [OrderType.INDOOR, OrderType.DELIVERY, OrderType.TAKEAWAY]
     };
@@ -210,145 +193,112 @@ const App: React.FC = () => {
           <div className="relative z-10 text-center px-6 mt-[-10vh]">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-xl px-8 py-3 rounded-full border border-white/20 mb-10 animate-pulse">
               <Sparkles size={18} className="text-yellow-400 fill-current"/>
-              <span className="text-[10px] font-black text-white uppercase tracking-[0.4em]">Gastronomia Digital de Elite</span>
+              <span className="text-[10px] font-black text-white uppercase tracking-[0.4em]">Multiplus - Tecnologia Gastronômica</span>
             </div>
             <h1 className="text-7xl md:text-9xl font-black text-white tracking-tighter mb-8 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
               Multi<span className="text-yellow-400">Food</span>
             </h1>
             <p className="text-white/80 text-lg md:text-2xl font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-md">
-              Acesse os melhores cardápios e faça seu pedido em segundos. 
-              Sabor, praticidade e tecnologia em um só lugar.
+              A revolução na gestão do seu estabelecimento. 
+              Pronto para crescer com inteligência.
             </p>
           </div>
         </section>
 
         <main className="flex-1 px-6 md:px-20 -mt-40 relative z-20 pb-40">
-           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-              {companies.map(company => {
-                const isOpen = isStoreOpen(company.id);
-                const compSettingsStr = localStorage.getItem(`mf_settings_v5_${company.id}`);
-                const compSettings: Settings | null = compSettingsStr ? JSON.parse(compSettingsStr) : null;
-                const whats = compSettings?.whatsapp || "85900000000";
-                
-                const coverImage = company.id === '1' 
-                  ? "https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=2070&auto=format&fit=crop" 
-                  : "https://images.unsplash.com/photo-1590301157890-4810ed352733?q=80&w=2070&auto=format&fit=crop"; 
+           {companies.length === 0 ? (
+             <div className="max-w-xl mx-auto bg-white p-12 rounded-[50px] shadow-2xl text-center border border-slate-100">
+                <Store size={64} className="mx-auto text-slate-200 mb-6"/>
+                <h2 className="text-2xl font-black mb-4">Nenhuma unidade ativa</h2>
+                <p className="text-slate-400 font-medium mb-10">Acesse o painel restrito para cadastrar sua primeira unidade.</p>
+                <button onClick={() => setAppMode('master_login')} className="bg-slate-950 text-white px-10 py-5 rounded-3xl font-black uppercase text-xs tracking-widest shadow-xl">Cadastrar Unidade</button>
+             </div>
+           ) : (
+             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                {companies.map(company => {
+                  const isOpen = isStoreOpen(company.id);
+                  const compSettingsStr = localStorage.getItem(`mf_settings_v5_${company.id}`);
+                  const compSettings: Settings | null = compSettingsStr ? JSON.parse(compSettingsStr) : null;
+                  const whats = compSettings?.whatsapp || "";
+                  
+                  return (
+                    <div key={company.id} className="group relative">
+                      {whats && (
+                        <a 
+                          href={`https://wa.me/${whats}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="absolute top-6 right-6 z-30 p-4 bg-emerald-500 text-white rounded-[24px] shadow-2xl hover:scale-110 transition-all border-4 border-white/20"
+                          title="Chamar no WhatsApp"
+                        >
+                          <MessageCircle size={22} fill="currentColor" />
+                        </a>
+                      )}
 
-                return (
-                  <div key={company.id} className="group relative">
-                    <a 
-                      href={`https://wa.me/${whats}`} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="absolute top-6 right-6 z-30 p-4 bg-emerald-500 text-white rounded-[24px] shadow-2xl hover:scale-110 active:scale-90 transition-all border-4 border-white/20 backdrop-blur-sm"
-                      title="Chamar no WhatsApp"
-                    >
-                      <MessageCircle size={22} fill="currentColor" />
-                    </a>
-
-                    <button 
-                      onClick={() => { setActiveCompany(company); setAppMode('customer_mode'); }}
-                      className="w-full bg-white rounded-[60px] overflow-hidden shadow-2xl border border-slate-100 hover:-translate-y-4 transition-all duration-700 flex flex-col text-left group"
-                    >
-                      <div className="h-60 w-full relative overflow-hidden">
-                        <img src={coverImage} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="Restaurante Cover"/>
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                        
-                        <div className="absolute bottom-6 left-8">
-                           <span className={`px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest backdrop-blur-md border border-white/20 shadow-lg ${isOpen ? 'bg-emerald-500/90 text-white' : 'bg-rose-500/90 text-white'}`}>
-                             {isOpen ? '● Aberto agora' : '○ Fechado'}
-                           </span>
-                        </div>
-                      </div>
-
-                      <div className="p-10 relative pt-16">
-                        <div className="absolute -top-14 left-10 w-28 h-28 bg-white rounded-[35px] shadow-2xl flex items-center justify-center font-black text-5xl text-slate-900 border-8 border-slate-50 group-hover:bg-yellow-400 group-hover:text-slate-950 transition-colors duration-500 overflow-hidden">
-                          {company.logo ? <img src={company.logo} className="w-full h-full object-cover" alt="Logo" /> : company.name.charAt(0)}
-                        </div>
-
-                        <div className="flex justify-between items-start mb-4">
-                          <h3 className="text-3xl font-black text-slate-900 tracking-tighter leading-tight">{company.name}</h3>
-                          <div className="flex items-center gap-1.5 text-yellow-500 bg-yellow-50 px-3 py-1.5 rounded-xl font-black text-xs">
-                            <Star size={16} fill="currentColor"/> 4.9
+                      <button 
+                        onClick={() => { setActiveCompany(company); setAppMode('customer_mode'); }}
+                        className="w-full bg-white rounded-[60px] overflow-hidden shadow-2xl border border-slate-100 hover:-translate-y-4 transition-all duration-700 flex flex-col text-left group"
+                      >
+                        <div className="h-60 w-full relative overflow-hidden bg-slate-900">
+                          {company.logo ? (
+                            <img src={company.logo} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-60" alt="Restaurante Cover"/>
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-white/10"><Store size={80}/></div>
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                          <div className="absolute bottom-6 left-8">
+                             <span className={`px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest backdrop-blur-md border border-white/20 shadow-lg ${isOpen ? 'bg-emerald-500/90 text-white' : 'bg-rose-500/90 text-white'}`}>
+                               {isOpen ? '● Aberto agora' : '○ Fechado'}
+                             </span>
                           </div>
                         </div>
 
-                        <p className="text-slate-400 font-medium text-base mb-10 line-clamp-2 leading-relaxed">
-                          Ingredientes selecionados, preparo artesanal e o melhor atendimento da região. Peça agora!
-                        </p>
-
-                        <div className="flex items-center justify-between pt-8 border-t border-slate-50">
-                           <div className="flex flex-col">
-                              <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-1">Taxa de Entrega</span>
-                              <span className="font-black text-2xl text-slate-900 tracking-tighter">R$ {company.deliveryFee.toFixed(2)}</span>
-                           </div>
-                           <div className="flex items-center gap-4">
-                              <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest group-hover:text-slate-950 transition-colors">Cardápio</span>
-                              <div className="p-5 bg-slate-950 text-white rounded-[28px] group-hover:bg-yellow-400 group-hover:text-slate-950 transition-all shadow-xl group-hover:rotate-6">
+                        <div className="p-10 relative pt-16">
+                          <div className="absolute -top-14 left-10 w-28 h-28 bg-white rounded-[35px] shadow-2xl flex items-center justify-center font-black text-5xl text-slate-900 border-8 border-slate-50 group-hover:bg-yellow-400 group-hover:text-slate-950 transition-colors duration-500 overflow-hidden">
+                            {company.logo ? <img src={company.logo} className="w-full h-full object-cover" alt="Logo" /> : company.name.charAt(0)}
+                          </div>
+                          <div className="flex justify-between items-start mb-4">
+                            <h3 className="text-3xl font-black text-slate-900 tracking-tighter leading-tight">{company.name}</h3>
+                          </div>
+                          <div className="flex items-center justify-between pt-8 border-t border-slate-50">
+                             <div className="flex flex-col">
+                                <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-1">Taxa de Entrega</span>
+                                <span className="font-black text-2xl text-slate-900 tracking-tighter">R$ {company.deliveryFee.toFixed(2)}</span>
+                             </div>
+                             <div className="p-5 bg-slate-950 text-white rounded-[28px] group-hover:bg-yellow-400 group-hover:text-slate-950 transition-all shadow-xl group-hover:rotate-6">
                                 <ChevronRight size={24} strokeWidth={3}/>
-                              </div>
-                           </div>
+                             </div>
+                          </div>
                         </div>
-                      </div>
-                    </button>
-                  </div>
-                );
-              })}
-           </div>
+                      </button>
+                    </div>
+                  );
+                })}
+             </div>
+           )}
         </main>
 
         <footer className="bg-slate-950 py-32 px-6 text-center text-white overflow-hidden relative">
-           <img 
-             src="https://images.unsplash.com/photo-1550966842-2849a221985b?q=80&w=2070&auto=format&fit=crop" 
-             className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none mix-blend-luminosity"
-             alt=""
-           />
-           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-slate-950/50" />
-           
-           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-yellow-400/5 blur-[150px] rounded-full" />
-           
            <div className="max-w-4xl mx-auto space-y-20 relative z-10">
               <div className="space-y-6">
                 <div className="flex items-center justify-center gap-4">
-                   <div className="w-14 h-14 bg-white/5 rounded-[22px] flex items-center justify-center text-yellow-400 border border-white/10 shadow-2xl">
+                   <div className="w-14 h-14 bg-white/5 rounded-[22px] flex items-center justify-center text-yellow-400 border border-white/10">
                       <Briefcase size={28}/>
                    </div>
-                   <h2 className="text-3xl font-black tracking-tighter uppercase">Expanda seu Negócio</h2>
+                   <h2 className="text-3xl font-black tracking-tighter uppercase">Painel Administrativo</h2>
                 </div>
-                <p className="text-slate-400 font-medium text-xl max-w-xl mx-auto leading-relaxed">
-                  Transforme seu restaurante em uma potência digital com a MultiFood. Tecnologia de ponta para gestão inteligente.
-                </p>
                 <div className="flex flex-col md:flex-row items-center justify-center gap-6 pt-8">
-                  <a 
-                    href="https://wa.me/35991048020" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 px-8 py-4 rounded-3xl border border-emerald-500/20 transition-all active:scale-95 group"
-                  >
-                    <MessageCircle size={20} className="group-hover:rotate-12 transition-transform"/>
-                    <span className="text-[10px] font-black uppercase tracking-widest">Falar com o Desenvolvedor</span>
-                  </a>
                   <button 
-                    onClick={() => alert('Para instalar o aplicativo:\n1. No Safari (iOS): toque em compartilhar e "Adicionar à Tela de Início"\n2. No Chrome (Android): toque nos três pontos e "Instalar Aplicativo"')}
+                    onClick={() => setAppMode('master_login')}
                     className="flex items-center gap-3 bg-white/5 hover:bg-white/10 text-white px-8 py-4 rounded-3xl border border-white/10 transition-all active:scale-95 group"
                   >
-                    <Smartphone size={20} className="group-hover:-translate-y-1 transition-transform"/>
-                    <span className="text-[10px] font-black uppercase tracking-widest">Instalar no Celular (PWA)</span>
+                    <Settings2 size={20}/>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Acessar Área Restrita</span>
                   </button>
                 </div>
               </div>
-
               <div className="pt-24 border-t border-white/5 space-y-4">
                  <p className="text-slate-500 font-black text-[11px] uppercase tracking-[0.3em]">Desenvolvido por Multiplus - Sistemas Inteligentes</p>
-                 <p className="text-slate-600 font-black text-[11px] uppercase tracking-[0.5em]">Silvio T. de Sá Filho</p>
-                 <div className="pt-8">
-                   <button 
-                    onClick={() => setAppMode('master_login')} 
-                    className="text-slate-800 text-[8px] font-black uppercase tracking-[0.8em] opacity-5 hover:opacity-100 transition-opacity"
-                   >
-                     ADMINISTRATIVO RESTRITO
-                   </button>
-                 </div>
               </div>
            </div>
         </footer>
@@ -360,7 +310,6 @@ const App: React.FC = () => {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
         <div className="bg-white p-12 rounded-[60px] w-full max-w-md shadow-2xl relative overflow-hidden">
-           <div className="absolute -top-24 -right-24 w-48 h-48 bg-yellow-400/20 blur-[60px] rounded-full" />
            <h2 className="text-3xl font-black text-slate-900 mb-8 tracking-tight text-center relative z-10">Login MultiFood</h2>
            <div className="space-y-4 mb-8 relative z-10">
               <input type="email" value={adminEmail} onChange={e => setAdminEmail(e.target.value)} className="w-full p-6 bg-slate-50 rounded-2xl font-bold border-2 border-transparent focus:border-slate-900 transition-all outline-none" placeholder="E-mail Administrativo"/>
@@ -382,7 +331,16 @@ const App: React.FC = () => {
                 <div className="p-3 bg-slate-950 text-white rounded-2xl"><Settings2 size={24}/></div>
                 <h2 className="text-4xl font-black text-slate-900 tracking-tighter">Painel Master MultiFood</h2>
              </div>
-             <button onClick={() => { localStorage.removeItem('is_master_logged_v5'); setAppMode('home'); }} className="bg-rose-50 text-rose-600 px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-sm hover:bg-rose-600 hover:text-white transition-all">Encerrar Sessão</button>
+             <div className="flex gap-4">
+                <button onClick={() => {
+                  const name = prompt('Nome da nova unidade:');
+                  if(name) {
+                    const newId = Date.now().toString();
+                    setCompanies(prev => [...prev, { id: newId, name, slug: name.toLowerCase().replace(/ /g, '-'), deliveryFee: 0, createdAt: new Date().toISOString() }]);
+                  }
+                }} className="bg-emerald-600 text-white px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl">+ Nova Unidade</button>
+                <button onClick={() => { localStorage.removeItem('is_master_logged_v5'); setAppMode('home'); }} className="bg-rose-50 text-rose-600 px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-sm">Sair</button>
+             </div>
           </header>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
              {companies.map(c => (
@@ -391,7 +349,10 @@ const App: React.FC = () => {
                     {c.logo ? <img src={c.logo} className="w-full h-full object-cover" alt="Logo" /> : c.name.charAt(0)}
                   </div>
                   <h3 className="text-2xl font-black text-slate-900 mb-8 tracking-tight">{c.name}</h3>
-                  <button onClick={() => { setActiveCompany(c); setAppMode('staff_mode'); }} className="w-full bg-slate-950 text-white py-6 rounded-3xl font-black uppercase text-[10px] tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all">Acessar Unidade</button>
+                  <div className="flex gap-2">
+                    <button onClick={() => { setActiveCompany(c); setAppMode('staff_mode'); }} className="flex-1 bg-slate-950 text-white py-6 rounded-3xl font-black uppercase text-[10px] tracking-widest shadow-xl">Gerenciar</button>
+                    <button onClick={() => setCompanies(prev => prev.filter(item => item.id !== c.id))} className="p-4 bg-rose-50 text-rose-500 rounded-2xl"><Trash size={18}/></button>
+                  </div>
                </div>
              ))}
           </div>
